@@ -2,22 +2,6 @@
 
 .onLoad <- function(libname, pkgname) {
 
-  # startup prompts, asking for someone's fangraphs' username and password. This will be stored in the Globa environment and used to create the proper connection to the FanGraphs database
-
-  fg_username <- readline("Please provide your username for the FanGraphs database: ")
-  assign("fg_username", fg_username, envir = .GlobalEnv)
-
-  fg_password <- readline("Please provid your password for the FanGraphs database: ")
-  assign("fg_password", fg_password, envir = .GlobalEnv)
-
-  # player ids
-  ids <- FGQuery('select PlayerId, concat(firstname," ",lastname) as Name from player_info')
-  assign("ids", ids, envir = .GlobalEnv)
-
-  #umpire ids
-  uids <- FGQuery('select distinct UName, UmpireId from umpires_daily_batting_full_pfx')
-  assign("uids", uids, envir = .GlobalEnv)
-
   # FG style colors
   fg_green = "#50AE26"
   assign("fg_green", fg_green, envir = .GlobalEnv)

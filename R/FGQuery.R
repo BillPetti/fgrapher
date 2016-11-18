@@ -1,5 +1,29 @@
 FGQuery = function(query) {
+
+  if (!exists(con)) {
+  fg_username <- readline("Please provide your username for the FanGraphs database: ")
+  assign("fg_username", fg_username, envir = .GlobalEnv)
+  
+  fg_password <- readline("Please provid your password for the FanGraphs database: ")
+  assign("fg_password", fg_password, envir = .GlobalEnv)
+  
   con = dbConnect(RMySQL::MySQL(), dbname = "tht", username = fg_username, password = fg_password, host = "db.fangraphs.com")
+  assign("con", con, envir = .GlobalEnv)
+  
+  # player ids
+  ids <- FGQuery('select PlayerId, concat(firstname," ",lastname) as Name from player_info')
+  assign("ids", ids, envir = .GlobalEnv)
+  
+  #umpire ids
+  uids <- FGQuery('select distinct UName, UmpireId from umpires_daily_batting_full_pfx')
+  assign("uids", uids, envir = .GlobalEnv)
+  
+  data = dbGetQuery(con, query)
+  cons = dbListConnections(MySQL())
+  for(con in cons) {dbDisconnect(con)}
+  return(data)
+}
+  else 
   data = dbGetQuery(con, query)
   cons = dbListConnections(MySQL())
   for(con in cons) {dbDisconnect(con)}
