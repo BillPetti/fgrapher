@@ -1,6 +1,7 @@
 #' Graph percentiles
 #' 
 #' @param player XXXXX
+#' @export
 #' @examples 
 #' \dontrun
 

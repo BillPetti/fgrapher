@@ -7,6 +7,7 @@
 #' @param stand Batter handedness
 #' @param save Whether to save the graph. Defaults to FALSE
 #' @param path Where to save the graph. Defaults to the current working directory
+#' @export
 
 umpire_graph = function(umpire = "all", 
                         startdate = "2015-01-01", enddate = "2015-12-31",

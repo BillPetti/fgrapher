@@ -2,6 +2,7 @@
 #' 
 #' @param startdate First date
 #' @param enddate Last date
+#' @export
 #' @examples 
 #' \dontrun{datify(startdate, enddate)}
 

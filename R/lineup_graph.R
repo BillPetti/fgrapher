@@ -9,6 +9,7 @@
 #' @param save Whether to save the graph. Defaults to FALSE
 #' @param path Where to save the graph. Defaults to the current working directory
 #' @param title Title to place on the graph. No title by default
+#' @export
 #' @examples 
 #' \dontrun{lineup_graph(2016, 04, 07, 12, 11, dh = 1, save = FALSE, path = getwd(), title = "")}
 

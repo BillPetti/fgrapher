@@ -3,6 +3,7 @@
 #' @param x Not sure
 #' @param hometeam ID for the hometeam
 #' @param awayteam ID for the awayteam
+#' @export
 
 team = function(x, hometeam, awayteam) {
   if (x <= 9) {

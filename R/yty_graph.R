@@ -9,6 +9,7 @@
 #' @param year.difference Defaults to 1
 #' @param save Whether to save the graph. Defaults to FALSE
 #' @param path Where to save the graph. Defaults to the current working directory
+#' @export
 
 yty_graph = function(stat1, stat2 = stat1, 
                      playertype = "batter", 

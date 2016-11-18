@@ -7,6 +7,7 @@
 #' @param stand Batter handedness. 
 #' @param save Whether to save the graph. Defaults to FALSE
 #' @param path Where to save the graph. Defaults to the current working directory
+#' @export
 #' @examples 
 #' \dontrun{release_graph()}
 

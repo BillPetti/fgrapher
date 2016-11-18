@@ -1,6 +1,7 @@
 #' Extend
 #' 
 #' @param n character string?
+#' @export
 #' @examples 
 #' \dontrun{extend(n)}
 

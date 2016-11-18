@@ -1,4 +1,5 @@
 #' Format dates
+#' @export
 #' @examples 
 #' \dontrun{dateformat(x)}
 

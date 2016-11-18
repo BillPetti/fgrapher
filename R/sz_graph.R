@@ -13,6 +13,7 @@
 #' @param color.code Defaults to "pitchtype"
 #' @param save Whether to save the graph. Defaults to FALSE
 #' @param path Where to save the graph. Defaults to the current working directory
+#' @export
 
 sz_graph = function(batter = "all", pitcher = "all", count = "all",
                     startdate = '2016-01-01', enddate = '2016-12-31', 
