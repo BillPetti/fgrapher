@@ -27,9 +27,13 @@ FGQuery = function(query) {
     assign("uids", uids, envir = .GlobalEnv)
     
     data = dbGetQuery(con, query)
+    dbDisconnect(con)
     return(data)
   }
   else 
+    con <- dbConnect(RMySQL::MySQL(), dbname = "tht", username = fg_username, password = fg_password, host = "db.fangraphs.com")
+  
     data = dbGetQuery(con, query)
-  return(data)
+    dbDisconnect(con)
+    return(data)
 }
