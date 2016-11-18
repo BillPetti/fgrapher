@@ -14,7 +14,4 @@ percentile_graph(player, player2 = "", playertype = "batter", year = 2016,
 \description{
 Graph percentiles
 }
-\examples{
-\dontrun
-}
 

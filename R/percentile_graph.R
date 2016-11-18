@@ -2,8 +2,6 @@
 #' 
 #' @param player XXXXX
 #' @export
-#' @examples 
-#' \dontrun
 
 percentile_graph = function(player, player2 = "", 
                             playertype = "batter", 
