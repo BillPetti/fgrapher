@@ -7,7 +7,7 @@
 
 FGQuery = function(query) {
 
-  if (!exists(con)) {
+  if (!exists("con")) {
   fg_username <- readline("Please provide your username for the FanGraphs database: ")
   assign("fg_username", fg_username, envir = .GlobalEnv)
   
