@@ -11,7 +11,7 @@ FGQuery = function(query) {
   fg_username <- readline("Please provide your username for the FanGraphs database: ")
   assign("fg_username", fg_username, envir = .GlobalEnv)
   
-  fg_password <- readline("Please provid your password for the FanGraphs database: ")
+  fg_password <- readline("Please provide your password for the FanGraphs database: ")
   assign("fg_password", fg_password, envir = .GlobalEnv)
   
   con = dbConnect(RMySQL::MySQL(), dbname = "tht", username = fg_username, password = fg_password, host = "db.fangraphs.com")

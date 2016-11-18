@@ -11,9 +11,9 @@ dateformat = function(x) {
       !is.na(as.numeric(substring(x,6,7))) &
       substring(x,8,8) == "-" &
       !is.na(as.numeric(substring(x,9,10))) &
-      is.Date(x)) {
+      is.Date(as.Date(x)))
     return(TRUE)
-  } else {
+  else {
     return(FALSE)
   }
 }
