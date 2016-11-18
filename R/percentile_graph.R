@@ -1,4 +1,9 @@
-#### GRAPH PITCHES ####
+#' Graph percentiles
+#' 
+#' @param player XXXXX
+#' @examples 
+#' \dontrun
+
 percentile_graph = function(player, player2 = "", 
                             playertype = "batter", 
                             year = 2016,

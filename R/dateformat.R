@@ -1,3 +1,8 @@
+#' Format dates
+#' @examples 
+#' \dontrun{dateformat(x)}
+
+
 # Logical - is it in proper format or not?
 dateformat = function(x) {
   if (!is.na(as.numeric(substring(x,1,4))) & 

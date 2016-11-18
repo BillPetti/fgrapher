@@ -1,4 +1,19 @@
-#### GRAPH PITCHES ####
+#' Graph sz
+#' 
+#' @param batter Defaults to "all"
+#' @param pitcher Defaults to "all"
+#' @param count Ball-strike count. Defaults to all
+#' @param startdate Start date
+#' @param enddate End date
+#' @param stand Batter handedness
+#' @param throws Pitcher handedness
+#' @param size Size of the markers
+#' @param heatmap Defaults to FALSE
+#' @param pitchtypes Defaults to all
+#' @param color.code Defaults to "pitchtype"
+#' @param save Whether to save the graph. Defaults to FALSE
+#' @param path Where to save the graph. Defaults to the current working directory
+
 sz_graph = function(batter = "all", pitcher = "all", count = "all",
                     startdate = '2016-01-01', enddate = '2016-12-31', 
                     stand = "R','L", throws = "R','L", size = 3, heatmap = FALSE, 

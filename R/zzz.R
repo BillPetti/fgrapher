@@ -1,4 +1,4 @@
-# contains objects to be loaded when the package loads
+# Contains objects to be loaded when the package loads
 
 .onLoad <- function(libname, pkgname) {
 

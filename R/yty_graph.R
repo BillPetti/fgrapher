@@ -1,4 +1,15 @@
-#### GRAPH YEAR-TO-YEAR CORRELATIONS BETWEEN STATS ####
+#' Graph the year-to-year correcltions between metrics
+#' 
+#' @param stat1 First statistic to correlate
+#' @param stat2 Second statistic to correlate
+#' @param playertype Either "batter" or "pitcher". Defaults to "batter".
+#' @param startyear Defaults to 2000
+#' @param endyear Defaults to 2016
+#' @param minpa Minimum number of plate appearances for a player's season to be included. Defaults to 0.
+#' @param year.difference Defaults to 1
+#' @param save Whether to save the graph. Defaults to FALSE
+#' @param path Where to save the graph. Defaults to the current working directory
+
 yty_graph = function(stat1, stat2 = stat1, 
                      playertype = "batter", 
                      startyear = 2000, endyear = 2016, 

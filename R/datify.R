@@ -1,4 +1,10 @@
-# Turn two dates into a clean word description of the time
+#' Turn two dates into a clean word description of the time
+#' 
+#' @param startdate First date
+#' @param enddate Last date
+#' @examples 
+#' \dontrun{datify(startdate, enddate)}
+
 datify = function(startdate, enddate) {
   startdate = lubridate::date(startdate)
   enddate = lubridate::date(enddate)

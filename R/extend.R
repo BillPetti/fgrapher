@@ -1,3 +1,9 @@
+#' Extend
+#' 
+#' @param n character string?
+#' @examples 
+#' \dontrun{extend(n)}
+
 extend = function(n) {
   if (nchar(n) == 1) {
     n = paste0("0",n)

@@ -1,3 +1,10 @@
+#' Send a query to the FanGraphs database
+#'
+#' @param query A query written in a way that is compatible with MySQL syntax
+#' @export
+#' @examples
+#' \dontrun{FGQuery(query)}
+
 FGQuery = function(query) {
 
   if (!exists(con)) {

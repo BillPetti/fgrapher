@@ -1,4 +1,15 @@
-#### GRAPH PITCHES ####
+#' Create a graph for aging curves, based on particular stats
+#'
+#' @param stat A metric available through the FanGraphs database.
+#' @param playertyoe Whether to run the aging curves for batters or pitchers. Defaults to "batter"
+#' @param startyear The first year from which to calculate the aging curve. Defaults to 2000.
+#' @param endyear The final year from which to calculate the aging curve. Defaults to 2016.
+#' @param save Whether or not to save the graph. Defaults to FALSE.
+#' @param path Where to save the graph. Defaults to the current working directory
+#' @export
+#' @examples
+#' \dontrun{age_curve_graph(stat, playertype = "batter", startyear = 2000, endyear = 2016, save = FALSE, path = getwd())}
+
 age_curve_graph = function(stat, 
                            playertype = "batter", 
                            startyear = 2000, endyear = 2016,

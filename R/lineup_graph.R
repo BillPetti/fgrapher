@@ -1,4 +1,17 @@
-#### GRAPH PROJECTED WRC+ FOR LINEUPS FOR A GAME ####
+#' Graph projected wRC+ for lineups in a game
+#' 
+#' @param year Four-digit year
+#' @param month Month
+#' @param day Day
+#' @param hometeam id for the home team
+#' @param awayteam id for the away team
+#' @param dh Whether it was a doubleheader. Defaults to 1.
+#' @param save Whether to save the graph. Defaults to FALSE
+#' @param path Where to save the graph. Defaults to the current working directory
+#' @param title Title to place on the graph. No title by default
+#' @examples 
+#' \dontrun{lineup_graph(2016, 04, 07, 12, 11, dh = 1, save = FALSE, path = getwd(), title = "")}
+
 lineup_graph = function(year, month, day, 
                         hometeam, awayteam, dh = 1, 
                         save = FALSE, path = getwd(), 

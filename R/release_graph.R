@@ -1,4 +1,15 @@
-#### GRAPH PITCHER RELEASE POINTS ####
+#' Graph pitcher release points
+#' 
+#' @param pitcher Pitcher id
+#' @param startdate Start date
+#' @param enddate End date
+#' @param pitchtypes Defaults to "all"
+#' @param stand Batter handedness. 
+#' @param save Whether to save the graph. Defaults to FALSE
+#' @param path Where to save the graph. Defaults to the current working directory
+#' @examples 
+#' \dontrun{release_graph()}
+
 release_graph = function(pitcher, 
                          startdate = "2016-01-01", enddate = "2016-12-31", 
                          pitchtypes = "all", stand = "R','L",
