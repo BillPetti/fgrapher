@@ -8,7 +8,9 @@ age_curve_graph(stat, playertype = "batter", startyear = 2000,
   endyear = 2016, save = FALSE, path = getwd())
 }
 \arguments{
-\item{stat}{A metric available through the FanGraphs database.}
+\item{stat}{The stat to generate the age curve for. Must be a metric available in the FanGraphs database.}
+
+\item{playertype}{Either "batter" or "pitcher". Defaults to "batter"}
 
 \item{startyear}{The first year from which to calculate the aging curve. Defaults to 2000.}
 
@@ -17,8 +19,6 @@ age_curve_graph(stat, playertype = "batter", startyear = 2000,
 \item{save}{Whether or not to save the graph. Defaults to FALSE.}
 
 \item{path}{Where to save the graph. Defaults to the current working directory}
-
-\item{playertyoe}{Whether to run the aging curves for batters or pitchers. Defaults to "batter"}
 }
 \description{
 Create a graph for aging curves, based on particular stats

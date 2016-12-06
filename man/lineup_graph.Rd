@@ -4,27 +4,27 @@
 \alias{lineup_graph}
 \title{Graph projected wRC+ for lineups in a game}
 \usage{
-lineup_graph(year, month, day, hometeam, awayteam, dh = 1, save = FALSE,
-  path = getwd(), title = "")
+lineup_graph(year, month, day, hometeam, awayteam, dh = 1, title = NA,
+  save = FALSE, path = getwd())
 }
 \arguments{
-\item{year}{Four-digit year}
+\item{year}{The year of the game.}
 
-\item{month}{Month}
+\item{month}{The month of the game.}
 
-\item{day}{Day}
+\item{day}{The day of the game.}
 
-\item{hometeam}{id for the home team}
+\item{hometeam}{Name or abbrevation for the home team.}
 
-\item{awayteam}{id for the away team}
+\item{awayteam}{Name or abbrevation for the away team}
 
-\item{dh}{Whether it was a doubleheader. Defaults to 1.}
+\item{dh}{Doubleheader. Defaults to 1. 1 means either no doubleheader or the first game of a doubleheader; 2 means the second game.}
 
-\item{save}{Whether to save the graph. Defaults to FALSE}
+\item{title}{Title to place on the graph. Defaults to automatic titling.}
 
-\item{path}{Where to save the graph. Defaults to the current working directory}
+\item{save}{Whether to save the graph. Defaults to FALSE.}
 
-\item{title}{Title to place on the graph. No title by default}
+\item{path}{Where to save the graph. Defaults to the current working directory.}
 }
 \description{
 Graph projected wRC+ for lineups in a game

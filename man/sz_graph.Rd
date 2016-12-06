@@ -2,41 +2,46 @@
 % Please edit documentation in R/sz_graph.R
 \name{sz_graph}
 \alias{sz_graph}
-\title{Graph sz}
+\title{Graph pitches and the strike zone, with different ways to color code}
 \usage{
 sz_graph(batter = "all", pitcher = "all", count = "all",
-  startdate = "2016-01-01", enddate = "2016-12-31", stand = "R','L",
-  throws = "R','L", size = 3, heatmap = FALSE, pitchtypes = "all",
-  color.code = "pitchtype", save = FALSE, path = getwd())
+  startdate = "2016-01-01", enddate = "2016-12-31", year = 0,
+  stand = "R','L", throws = "R','L", size = 3, heatmap = FALSE,
+  pitchtypes = "all", color.code = "pitchtype", plot.title = "default",
+  save = FALSE, path = getwd())
 }
 \arguments{
-\item{batter}{Defaults to "all"}
+\item{batter}{Defaults to "all". Input either a name or FanGraphs playerid.}
 
-\item{pitcher}{Defaults to "all"}
+\item{pitcher}{Defaults to "all". Input either a name or FanGraphs playerid.}
 
-\item{count}{Ball-strike count. Defaults to all}
+\item{count}{Ball-strike count. Defaults to all. Input x instead of a number to get all counts; e.g. "3-x" for all 3-ball counts}
 
-\item{startdate}{Start date}
+\item{startdate}{Start date. Format yyyy-mm-dd. Defaults to 2016-01-01.}
 
-\item{enddate}{End date}
+\item{enddate}{End date. Format yyyy-mm-dd. Defaults to 2017-01-01.}
 
-\item{stand}{Batter handedness}
+\item{year}{The year. Overrides startdate and enddate. Can only be one full year -- use startdate and enddate for full control over date range.}
 
-\item{throws}{Pitcher handedness}
+\item{stand}{Batter handedness. Defaults to both.}
 
-\item{size}{Size of the markers}
+\item{throws}{Pitcher handedness. Defaults to both.}
 
-\item{heatmap}{Defaults to FALSE}
+\item{size}{Size of the points on the graph.}
 
-\item{pitchtypes}{Defaults to all}
+\item{heatmap}{Defaults to FALSE.}
 
-\item{color.code}{Defaults to "pitchtype"}
+\item{pitchtypes}{Defaults to all. To include multiple pitch types, create an array: c("Four-seam fastball","Changeup","Breaking ball")}
 
-\item{save}{Whether to save the graph. Defaults to FALSE}
+\item{color.code}{What the colors of the points signify. Defaults to "pitchtype". Other options: result, hittype, biptype. Must be in quotation marks.}
 
-\item{path}{Where to save the graph. Defaults to the current working directory}
+\item{plot.title}{The title of the plot. Leave default unless you want a specific custom title.}
+
+\item{save}{Whether to save the graph. Defaults to FALSE.}
+
+\item{path}{Where to save the graph. Defaults to the current working directory.}
 }
 \description{
-Graph sz
+Graph pitches and the strike zone, with different ways to color code
 }
 

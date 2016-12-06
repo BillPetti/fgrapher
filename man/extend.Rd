@@ -2,7 +2,7 @@
 % Please edit documentation in R/extend.R
 \name{extend}
 \alias{extend}
-\title{Extend}
+\title{Extend a day or month number into a 2-character string}
 \usage{
 extend(n)
 }
@@ -10,7 +10,7 @@ extend(n)
 \item{n}{character string?}
 }
 \description{
-Extend
+Extend a day or month number into a 2-character string
 }
 \examples{
 \dontrun{extend(n)}

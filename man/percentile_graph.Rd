@@ -2,16 +2,32 @@
 % Please edit documentation in R/percentile_graph.R
 \name{percentile_graph}
 \alias{percentile_graph}
-\title{Graph percentiles}
+\title{Graph percentiles for different stats for a particular player (or compare 2 players)}
 \usage{
 percentile_graph(player, player2 = "", playertype = "batter", year = 2016,
   stats = "standard", denom = "PA", mindenom = 200, save = FALSE,
   path = getwd())
 }
 \arguments{
-\item{player}{XXXXX}
+\item{player}{The player to examine.}
+
+\item{player2}{Optional. A player to compare.}
+
+\item{playertype}{Either "batter" or "pitcher". Defaults to batter.}
+
+\item{year}{The year to graph.}
+
+\item{stats}{The stats to use. Options are "standard" (default), "slash" (triple slash), "bip" (ball-in-play types), "qoc" (quality of contact), "pfx" (pitchf/x stats), "eras" (ERA/FIP/xFIP, pitchers only), "luck" (BABIP/HR per FB%/LOB%, pitchers only). Also can input custom array of stats. E.g. c("GB%","K%","OBP","SwStr%")}
+
+\item{denom}{The type of denominator to set the minimum. Defaults to plate appearances/total batters faced depending on the player type. Other options are "Pitches", "AB" (batters), "BIPcount", "GB", "FB", "LD"}
+
+\item{mindenom}{The minimum number of whatever the denominator is to create the set of players to compare to. Default is 200 (plate appearances).}
+
+\item{save}{Whether to save the graph. Defaults to FALSE.}
+
+\item{path}{Where to save the graph. Defaults to the current working directory.}
 }
 \description{
-Graph percentiles
+Graph percentiles for different stats for a particular player (or compare 2 players)
 }
 
