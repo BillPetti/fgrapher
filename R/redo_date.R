@@ -6,5 +6,5 @@
 #' \dontrun{redo_date(2016-05-02)}
 
 redo_date = function(date) {
-  return(month(date),"-",day(date),"-",year(date))
+  return(paste0(month(date),"-",day(date),"-",year(date)))
 }

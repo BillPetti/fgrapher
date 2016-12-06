@@ -1,24 +1,26 @@
-#' Graph sz
+#' Graph pitches and the strike zone, with different ways to color code
 #' 
-#' @param batter Defaults to "all"
-#' @param pitcher Defaults to "all"
-#' @param count Ball-strike count. Defaults to all
-#' @param startdate Start date
-#' @param enddate End date
-#' @param stand Batter handedness
-#' @param throws Pitcher handedness
-#' @param size Size of the markers
-#' @param heatmap Defaults to FALSE
-#' @param pitchtypes Defaults to all
-#' @param color.code Defaults to "pitchtype"
-#' @param save Whether to save the graph. Defaults to FALSE
-#' @param path Where to save the graph. Defaults to the current working directory
+#' @param batter Defaults to "all". Input either a name or FanGraphs playerid.
+#' @param pitcher Defaults to "all". Input either a name or FanGraphs playerid.
+#' @param count Ball-strike count. Defaults to all. Input x instead of a number to get all counts; e.g. "3-x" for all 3-ball counts
+#' @param startdate Start date. Format yyyy-mm-dd. Defaults to 2016-01-01.
+#' @param enddate End date. Format yyyy-mm-dd. Defaults to 2017-01-01.
+#' @param year The year. Overrides startdate and enddate. Can only be one full year -- use startdate and enddate for full control over date range.
+#' @param stand Batter handedness. Defaults to both.
+#' @param throws Pitcher handedness. Defaults to both.
+#' @param size Size of the points on the graph.
+#' @param heatmap Defaults to FALSE.
+#' @param pitchtypes Defaults to all. To include multiple pitch types, create an array: c("Four-seam fastball","Changeup","Breaking ball")
+#' @param color.code What the colors of the points signify. Defaults to "pitchtype". Other options: result, hittype, biptype. Must be in quotation marks.
+#' @param plot.title The title of the plot. Leave default unless you want a specific custom title.
+#' @param save Whether to save the graph. Defaults to FALSE.
+#' @param path Where to save the graph. Defaults to the current working directory.
 #' @export
 
 sz_graph = function(batter = "all", pitcher = "all", count = "all",
-                    startdate = '2016-01-01', enddate = '2016-12-31', 
+                    startdate = '2016-01-01', enddate = '2016-12-31', year = 0,
                     stand = "R','L", throws = "R','L", size = 3, heatmap = FALSE, 
-                    pitchtypes = "all", color.code = "pitchtype",
+                    pitchtypes = "all", color.code = "pitchtype", plot.title = "default",
                     save = FALSE, path = getwd()) {
   
   if (!dateformat(startdate)) {
@@ -35,8 +37,15 @@ sz_graph = function(batter = "all", pitcher = "all", count = "all",
     stop("Input a number for size")
   } else if (!is.logical(heatmap)) {
     stop("Input a logical value for save (TRUE or FALSE)")
-  } else if (!color.code %in% c("pitchtype","hittype","biptype","result")) {
-    stop('color.code must be one of the following:\n"pitchtype", "hittype", "biptype", "result"')
+  } else if (!color.code %in% c("pitchtype","hittype","biptype","result","umpire","none")) {
+    stop('color.code must be one of the following:\n"pitchtype", "hittype", "biptype", "result", "umpire", "none"')
+  } else if (heatmap & color.code != "pitchtype") {
+    stop("Do not use color.code when creating a heatmap")
+  }
+  
+  if (year != 0) {
+    startdate = paste0(year,"-01-01")
+    enddate = paste0(year,"-12-31")
   }
   
   if (!"all" %in% pitchtypes) {
@@ -99,34 +108,42 @@ sz_graph = function(batter = "all", pitcher = "all", count = "all",
   }
   
   query.add = ""
+  title.add = ""
   if (color.code == "pitchtype") {
     scale.colors = c(fg_green,fg_orange,fg_blue,fg_red,"purple","yellow","black")
-    scale.name = "Pitch Type"
     col = 3
+    title.add = " Pitch Types"
   } else if (color.code == "result") {
     scale.colors = c(fg_green,"yellow",fg_blue,"purple","black",fg_red)
-    scale.name = "Result"
     col = 5
+    title.add = " Pitch Results"
   } else if (color.code == "hittype") {
     scale.colors = c("lightblue",fg_green,fg_orange,fg_red,"black")
-    scale.name = "Hit Type"
     query.add = " having hittype is not null"
     col = 6
+    title.add = " Hit Types"
   } else if (color.code == "biptype") {
     scale.colors = c("black","lightblue",fg_red,fg_green)
-    scale.name = "Ball in Play Type"
     query.add = " having biptype is not null"
     col = 7
+    title.add = " Ball-in-Play Types"
+  } else if (color.code == "umpire") {
+    scale.colors = c("lightblue",fg_red)
+    query.add = " having result in ('Ball','Called Strike')"
+    col = 8
+    title.add = " Called Strike Map"
+  }
+  if (heatmap) {
+    title.add = " Pitch Location Heatmap"
   }
   
-  query = paste0("select px, pz, case when pitch_type in ('FF','FA') then 'Four-seam fastball' when pitch_type in ('SI','FT') then 'Two-seam fastball' when pitch_type in ('CU','SL','KC','SC','EP','FO') then 'Breaking ball' when pitch_type = 'CH' then 'Changeup' when pitch_type = 'FC' then 'Cutter' when pitch_type = 'FS' then 'Splitter' when pitch_type = 'KN' then 'Knuckleball' else NULL end as pitch, stand, case when des2 like 'foul%' and des2 != 'foul tip' then 'Foul' when des2 like 'in play%' then 'In Play' when des2 like 'swinging%' or des2 like 'foul tip' or des2 like 'missed%' then 'Swinging Strike' when des2 like '%ball%' then 'Ball' when des2 like 'called%' then 'Called Strike' when des2 like 'hit by%' then 'Hit by Pitch' else null end as Result, case when des2 like 'in play%' then case when event1 not in ('single','double','triple','home run') then 'Out' else event1 end else NULL end as HitType, case when finalpitch = 1 and (des1 like '%grounds%' or des1 like '%ground ball%') then 'Ground Ball' when finalpitch = 1 and (des1 like '%flies%' or des1 like '%fly ball%' or des1 like '%sacrifice fly%' or des1 like '%grand slam%') then 'Fly Ball' when finalpitch = 1 and (des1 like '%lines%' or des1 like '%line drive%') then 'Line Drive' when finalpitch = 1 and (des1 like '%pops%' or des1 like '%pop out%') then 'Popup' else NULL end as BIPType from gd_pitch g join playerid_lookup b on b.mlbamid = g.batter join playerid_lookup p on p.mlbamid = g.pitcher where gamedate between '",
+  query = paste0("select px, pz, case when pitch_type in ('FF','FA') then 'Four-seam fastball' when pitch_type in ('SI','FT') then 'Two-seam fastball' when pitch_type in ('CU','SL','KC','SC','EP','FO') then 'Breaking ball' when pitch_type = 'CH' then 'Changeup' when pitch_type = 'FC' then 'Cutter' when pitch_type = 'FS' then 'Splitter' when pitch_type = 'KN' then 'Knuckleball' else NULL end as pitch, stand, case when des2 like 'foul%' and des2 != 'foul tip' then 'Foul' when des2 like 'in play%' then 'In Play' when des2 like 'swinging%' or des2 like 'foul tip' or des2 like 'missed%' then 'Swinging Strike' when des2 like '%ball%' then 'Ball' when des2 like 'called%' then 'Called Strike' when des2 like 'hit by%' then 'Hit by Pitch' else null end as Result, case when des2 like 'in play%' then case when event1 not in ('single','double','triple','home run') then 'Out' else event1 end else NULL end as HitType, case when finalpitch = 1 and (des1 like '%grounds%' or des1 like '%ground ball%') then 'Ground Ball' when finalpitch = 1 and (des1 like '%flies%' or des1 like '%fly ball%' or des1 like '%sacrifice fly%' or des1 like '%grand slam%') then 'Fly Ball' when finalpitch = 1 and (des1 like '%lines%' or des1 like '%line drive%') then 'Line Drive' when finalpitch = 1 and (des1 like '%pops%' or des1 like '%pop out%') then 'Popup' else NULL end as BIPType, case when des2 like 'ball%' then 'Ball' else 'Called Strike' end as CS from gd_pitch g join playerid_lookup b on b.mlbamid = g.batter join playerid_lookup p on p.mlbamid = g.pitcher where gamedate between '",
                 startdate, "' and '", enddate, 
                 "' and pitch_type not in ('AB','PO','IN','UN') and pitch_type is not null",
                 batter.query,pitcher.query,ball.query,strike.query,
                 " and stand in ('", stand,"')",
                 " and p_throws in ('", throws,"')",
                 query.add)
-
   pitches = FGQuery(query)
   
   if (nrow(pitches) == 0) {
@@ -181,7 +198,8 @@ sz_graph = function(batter = "all", pitcher = "all", count = "all",
                  stand = c("X","X","X","X","X","X","X"),
                  Result = c("Swinging Strike","Ball","Called Strike","Foul","In Play","Hit by Pitch","Swinging Strike"),
                  HitType = c("Single","Double","Triple","Home Run","Out","Single","Single"),
-                 BIPType = c("Ground Ball","Fly Ball","Line Drive","Popup","Ground Ball","Ground Ball","Ground Ball"))
+                 BIPType = c("Ground Ball","Fly Ball","Line Drive","Popup","Ground Ball","Ground Ball","Ground Ball"),
+                 CS = c("Ball","Ball","Ball","Ball","Ball","Ball","Ball"))
   
   pitches = rbind(pitches,x)
   
@@ -190,16 +208,22 @@ sz_graph = function(batter = "all", pitcher = "all", count = "all",
   time = datify(startdate, enddate)
     
   if (batter != "all" & pitcher != "all") {
-    title = paste0(batter.name, " vs. ", pitcher.name, ", ",time)
+    title = paste(batter.name, "vs.", pitcher.name)
   } else if (batter != "all" & pitcher == "all") {
-    title = paste0(batter.name, ", ", time)
+    title = batter.name
   } else if (batter == "all" & pitcher != "all") {
-    title = paste0(pitcher.name, ", ", time)
+    title = pitcher.name
   } else {
-    title = paste("All Batters and Pitchers,", time)
+    title = "All Batters and Pitchers"
+  }
+  title = paste0(title,title.add)
+  title = paste0(title,", ",time)
+
+  if (plot.title != "default") {
+    title = plot.title
   }
   
-  subt = "Catcher's Perspective. "
+  subt = ""
   if (stand != "R','L") {
     standdesc = ifelse(stand == "R","Righty","Lefty")
     if (is.na(batter.id)) {
@@ -226,22 +250,50 @@ sz_graph = function(batter = "all", pitcher = "all", count = "all",
                  substring(tolower(paste0(paste(pitchtypes,collapse=", ")," only.")),2))
   }
   
+  capt = "Catcher's perspective. Source: PITCHf/x"
+  
+  if (subt == "") {
+    plot.title = ggtitle(title)
+  } else {
+    plot.title = ggtitle(title, subtitle = subt)
+  }
+  
   if (!heatmap) {
-    g = ggplot(pitches, aes(x=px, y=pz, color = pitches[,col])) +
-      geom_point(alpha = .5, size = size) +
-      geom_segment(x=sz_left, xend=sz_right, y=sz_bot, yend = sz_bot, color = "black", size = 1) +
-      geom_segment(x=sz_left, xend=sz_right, y=sz_top, yend = sz_top, color = "black", size = 1) +
-      geom_segment(x=sz_left, xend=sz_left, y=sz_top, yend = sz_bot, color = "black", size = 1) +
-      geom_segment(x=sz_right, xend=sz_right, y=sz_top, yend = sz_bot, color = "black", size = 1) +
-      fgt +
-      coord_cartesian(xlim=c(-3,3),ylim=c(0,6)) +
-      geom_segment(x=-5,xend=5,y=0,yend=0,size=.75,color="black") +
-      scale_color_manual(values = scale.colors, name = "") +
-      labs(x="",y="", caption = "Catcher's point of view") +
-      ggtitle(bquote(atop(.(title), atop(.(subt)), ""))) +
-      theme(axis.text=element_text(size=0), 
-            panel.grid.major = element_line(size=0), 
-            axis.ticks = element_line(size=0))
+    if (color.code != "none") {
+      g = ggplot(pitches, aes(x=px, y=pz, color = pitches[,col])) +
+        geom_point(alpha = .5, size = size) +
+        geom_segment(x=sz_left, xend=sz_right, y=sz_bot, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+        geom_segment(x=sz_left, xend=sz_right, y=sz_top, yend = sz_top, color = "black", size = 1, lineend = "round") +
+        geom_segment(x=sz_left, xend=sz_left, y=sz_top, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+        geom_segment(x=sz_right, xend=sz_right, y=sz_top, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+        fgt +
+        coord_cartesian(xlim=c(-3,3),ylim=c(0,6)) +
+        geom_segment(x=-5,xend=5,y=0,yend=0,size=.75,color="black") +
+        scale_color_manual(values = scale.colors, name = "") +
+        labs(x="",y="",caption = capt) +
+        plot.title +
+        theme(axis.text=element_text(size=0), 
+              panel.grid.major = element_line(size=0),
+              axis.ticks = element_line(size=0),
+              panel.background = element_rect(color="white")) +
+        guides(colour = guide_legend(override.aes = list(size=4)))
+    } else {
+      g = ggplot(pitches, aes(x=px, y=pz)) +
+        geom_point(alpha = .5, size = size, color = fg_green) +
+        geom_segment(x=sz_left, xend=sz_right, y=sz_bot, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+        geom_segment(x=sz_left, xend=sz_right, y=sz_top, yend = sz_top, color = "black", size = 1, lineend = "round") +
+        geom_segment(x=sz_left, xend=sz_left, y=sz_top, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+        geom_segment(x=sz_right, xend=sz_right, y=sz_top, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+        fgt +
+        coord_cartesian(xlim=c(-3,3),ylim=c(0,6)) +
+        geom_segment(x=-5,xend=5,y=0,yend=0,size=.75,color="black") +
+        labs(x="",y="",caption = capt) +
+        plot.title +
+        theme(axis.text=element_text(size=0), 
+              panel.grid.major = element_line(size=0),
+              axis.ticks = element_line(size=0),
+              panel.background = element_rect(color="white"))
+    }
   } else {
     if (batter != "all") {
       scale.name = "Pitches Seen"
@@ -250,28 +302,32 @@ sz_graph = function(batter = "all", pitcher = "all", count = "all",
     }
     g = ggplot(pitches, aes(x=px,y=pz)) +
       geom_bin2d(binwidth = c(.2,.2)) +
-      geom_segment(x=sz_left, xend=sz_right, y=sz_bot, yend = sz_bot, color = "black", size = 1) +
-      geom_segment(x=sz_left, xend=sz_right, y=sz_top, yend = sz_top, color = "black", size = 1) +
-      geom_segment(x=sz_left, xend=sz_left, y=sz_top, yend = sz_bot, color = "black", size = 1) +
-      geom_segment(x=sz_right, xend=sz_right, y=sz_top, yend = sz_bot, color = "black", size = 1) +
+      geom_segment(x=sz_left, xend=sz_right, y=sz_bot, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+      geom_segment(x=sz_left, xend=sz_right, y=sz_top, yend = sz_top, color = "black", size = 1, lineend = "round") +
+      geom_segment(x=sz_left, xend=sz_left, y=sz_top, yend = sz_bot, color = "black", size = 1, lineend = "round") +
+      geom_segment(x=sz_right, xend=sz_right, y=sz_top, yend = sz_bot, color = "black", size = 1, lineend = "round") +
       fgt +
-      coord_cartesian(xlim=c(-3,3),ylim=c(0,6)) +
+      coord_cartesian(xlim=c(-3,3),ylim=c(0,5)) +
       geom_segment(x=-5,xend=5,y=0,yend=0,size=.75,color="black") +
       scale_fill_gradient(low="white",high=fg_green,name=scale.name) +
-      labs(x="",y="") +
-      ggtitle(bquote(atop(.(title), atop(.(subt)), ""))) +
+      labs(x="",y="", caption = capt) +
+      plot.title +
       theme(axis.text=element_text(size=0), 
             panel.grid.major = element_line(size=0), 
-            axis.ticks = element_line(size=0)) +
-      guides(color = guide_legend(nrow = 1))
+            axis.ticks = element_line(size=0),
+            panel.background = element_rect(color="white")) +
+      guides(color = guide_legend(nrow = 1)) +
+      guides(colour = guide_legend(override.aes = list(size=4)))
   }
   
   fname = paste0(gsub("\\.","",gsub(" ","_",gsub(", ","_",title))),".png")
-
+  
+  if (color.code == "none") {h = 6} else {h = 7}
+  
   if (save) {
     ggsave(filename = fname,
            path = path,
-           height = 7,
+           height = h,
            width = 8)
   }
   

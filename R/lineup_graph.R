@@ -1,22 +1,39 @@
 #' Graph projected wRC+ for lineups in a game
 #' 
-#' @param year Four-digit year
-#' @param month Month
-#' @param day Day
-#' @param hometeam id for the home team
-#' @param awayteam id for the away team
-#' @param dh Whether it was a doubleheader. Defaults to 1.
-#' @param save Whether to save the graph. Defaults to FALSE
-#' @param path Where to save the graph. Defaults to the current working directory
-#' @param title Title to place on the graph. No title by default
+#' @param year The year of the game.
+#' @param month The month of the game.
+#' @param day The day of the game.
+#' @param hometeam Name or abbrevation for the home team.
+#' @param awayteam Name or abbrevation for the away team
+#' @param dh Doubleheader. Defaults to 1. 1 means either no doubleheader or the first game of a doubleheader; 2 means the second game.
+#' @param title Title to place on the graph. Defaults to automatic titling.
+#' @param save Whether to save the graph. Defaults to FALSE.
+#' @param path Where to save the graph. Defaults to the current working directory.
 #' @export
 #' @examples 
 #' \dontrun{lineup_graph(2016, 04, 07, 12, 11, dh = 1, save = FALSE, path = getwd(), title = "")}
 
 lineup_graph = function(year, month, day, 
-                        hometeam, awayteam, dh = 1, 
-                        save = FALSE, path = getwd(), 
-                        title = "") {
+                        hometeam, awayteam, dh = 1, title = NA,
+                        save = FALSE, path = getwd()) {
+  
+  
+  if (!hometeam %in% color[["MLBid"]]) {
+    for (row in seq(1,nrow(color))) {
+      if (hometeam %in% as.vector(t(color[row,]))) {
+        hometeam = color[row,7]
+      }
+    }
+  }
+  
+  if (!awayteam %in% color[["MLBid"]]) {
+    for (row in seq(1,nrow(color))) {
+      if (awayteam %in% as.vector(t(color[row,]))) {
+        awayteam = color[row,7]
+      }
+    }
+  }
+  
   
   if (is.na(as.numeric(year)) || nchar(year) != 4) {
     stop("Invalid year")
@@ -115,7 +132,7 @@ lineup_graph = function(year, month, day,
   
   max.wrcp = max(df$wrcp)
   
-  if (title == "") {
+  if (is.na(title)) {
     title = paste(away.full, "at", home.full, "Lineups: Projected wRC+")
     subtitle = paste(month,day,year,sep="-")
   } else {
@@ -126,7 +143,7 @@ lineup_graph = function(year, month, day,
     geom_bar(width=1,stat="identity",aes(label=Name,fill=Team,color=Team)) + 
     coord_flip(ylim=c(6,max.wrcp+15)) + 
     scale_y_continuous(breaks=seq(0,200,20)) + 
-    labs(y="wRC+",x="", title = title) +
+    labs(y="wRC+",x="", title = title, caption = "FanGraphs depth chart projections") +
     geom_hline(yintercept = 100,color="white") + 
     fgt + theme(panel.grid.major = element_line(size=0),axis.line.x=element_line(size=0),plot.background=element_rect(fill=fg_green,color=fg_green),panel.background=element_rect(fill=fg_green,color=fg_green),legend.background=element_rect(fill=fg_green,color=fg_green),axis.title=element_text(color="white"),axis.text=element_text(color="white"),legend.text=element_text(color="white"),legend.title=element_text(color="white"),axis.ticks=element_line(color="white"),plot.title=element_text(color="white")) + 
     scale_fill_manual(values=c(team1.main,team2.main)) + 
