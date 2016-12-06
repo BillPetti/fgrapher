@@ -7,6 +7,7 @@
 #' \dontrun{datify(startdate, enddate)}
 
 datify = function(startdate, enddate) {
+  months = c("January","February","March","April","May","June","July","August","September","October","November","December")
   startdate = lubridate::date(startdate)
   enddate = lubridate::date(enddate)
   if (month(startdate) == 1 & day(startdate) == 1 & month(enddate) == 12 & day(enddate) == 31) {
@@ -35,4 +36,5 @@ datify = function(startdate, enddate) {
       time = paste(startdate,"-",enddate)
     }
   }
+  return(time)
 }

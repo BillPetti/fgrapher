@@ -1,10 +1,10 @@
-#' Graph pitches by umpire
+#' Graph the called strike zone for an umpire
 #' 
-#' @param umpire Umpire ID. Defaults to "all".
-#' @param startdate Start date
-#' @param enddate End date
-#' @param count Ball-strike count. Defaults to all
-#' @param stand Batter handedness
+#' @param umpire Umpire name or ID. Defaults to "all". WARNING: Leaving as all will make graph take a long time to create.
+#' @param startdate Start date. Defaults to beginning of 2015. Format yyyy-mm-dd.
+#' @param enddate End date. Defaults to end of 2015. Format yyyy-mm-dd.
+#' @param count Ball-strike count. Defaults to all. Input x instead of a number to get all counts; e.g. "3-x" for all 3-ball counts
+#' @param stand Batter handedness. Defaults to both.
 #' @param save Whether to save the graph. Defaults to FALSE
 #' @param path Where to save the graph. Defaults to the current working directory
 #' @export
@@ -59,7 +59,7 @@ umpire_graph = function(umpire = "all",
   query = paste0('select u.UmpireId, u.UName, u.GameDate, case when homeaway = "H" then teamid else oppteamid end as HomeTeamId, g.px, g.pz, case when g.des2 like "ball%" then 0 else 1 end as CS from umpires_daily_batting_full_pfx u 
                 join gd_pitch g on g.gamedate = u.gamedate and g.hometeamid = case when u.homeaway = "H" then u.teamid else u.oppteamid end and (g.dh = 0 or (g.dh = 1 and u.daynight = "D") or (g.dh = 2 and u.daynight = "N"))
                 where uposition = "home" and (g.des2 like "called%" or g.des2 like "ball%") and px is not null and pz is not null',
-                u.query,' and u.gamedate > "', startdate, '" and u.gamedate < "', enddate,'"',ball.query,strike.query)
+                u.query,' and u.gamedate > "', startdate, '" and u.gamedate < "', enddate,'"',ball.query,strike.query," and stand in (\"",stand,"\")")
   data = FGQuery(query)
 
   data = with(data, interp(x=px,y=pz,z=CS,duplicate="mean", nx = 100, ny = 100))
@@ -70,24 +70,37 @@ umpire_graph = function(umpire = "all",
   data.melt$CS = data.melt$CS + 0.00001
   
   time = datify(startdate, enddate)
-  title = ifelse(umpire == "all", paste("Called Strike Map,",time), paste0(name," Called Strike Map, ",time))
+  title = ifelse(umpire == "all", paste("Called Strike Map,",time), paste0(name," Called Strike Map"))
   
-  subt = "Catcher's perspective. "
+  subt = ""
   if (count != "all") {
     if (substring(count,1,1) == "x") {
-      subt = paste0(subt,strikes,"-strike counts only. ")
+      subt = paste0(strikes,"-strike counts only.")
     } else if (substring(count,3,3) == "x") {
-      subt = paste0(subt,balls,"-ball counts only. ")
+      subt = paste0(balls,"-ball counts only.")
     } else {
-      subt = paste0(subt,count," counts only. ")
+      subt = paste0(count," counts only.")
     }
+  }
+  if (stand !='R","S') {
+    if (stand == "R") {stand.name = "Righty batters only."}
+    if (stand == "L") {stand.name = "Lefty batters only."}
+    subt = paste(subt,stand.name)
+  }
+  
+  capt = paste("Catcher's Perspective. Source: PITCHF/x. Timeframe:", time)
+  
+  if (subt == "") {
+    plot.title = ggtitle(title)
+  } else {
+    plot.title = ggtitle(title, subtitle = subt)
   }
   
   g = ggplot(data = data.melt, aes(x = px, y = pz, z = CS*100)) + 
     stat_contour(geom="polygon", aes(fill=..level..)) + 
     scale_fill_gradient2(low="mediumblue",high="red",mid="#8F0094",midpoint=60,name="Called Strike%") + 
-    labs(x="X position (ft.), 0 = middle of the strike zone", y="Height (ft.) off ground") +
-    ggtitle(bquote(atop(.(title), atop(.(subt)), ""))) +
+    labs(x="X position (ft.), 0 = middle of the strike zone", y="Height (ft.) off ground",caption=capt) +
+    plot.title +
     fgt + theme(panel.background=element_rect(fill="#0000FF"), 
                 panel.grid.major=element_line(size = 0)) +
     geom_segment(x=sz_left, xend=sz_right, y=sz_bot, yend = sz_bot, color = "black", size = 1) +

@@ -1,12 +1,12 @@
 #' Graph pitcher release points
 #' 
-#' @param pitcher Pitcher id
-#' @param startdate Start date
-#' @param enddate End date
-#' @param pitchtypes Defaults to "all"
-#' @param stand Batter handedness. 
-#' @param save Whether to save the graph. Defaults to FALSE
-#' @param path Where to save the graph. Defaults to the current working directory
+#' @param pitcher Pitcher name or FanGraphs playerid.
+#' @param startdate Start date. Defaults to beginning of 2016. Format yyyy-mm-dd.
+#' @param enddate End date. Defaults to end of 2016. Format yyyy-mm-dd.
+#' @param pitchtypes Defaults to all. To include multiple pitch types, create an array: c("Four-seam fastball","Changeup","Breaking ball")
+#' @param stand Batter handedness. Defaults to both.
+#' @param save Whether to save the graph. Defaults to FALSE.
+#' @param path Where to save the graph. Defaults to the current working directory.
 #' @export
 #' @examples 
 #' \dontrun{release_graph()}
@@ -61,14 +61,19 @@ release_graph = function(pitcher,
                   substring(tolower(paste0(paste(pitchtypes,collapse=", ")," only.")),2))
   }
   
+  if (subt == "") {
+    plot.title = ggtitle(title)
+  } else {
+    plot.title = ggtitle(title, subtitle = subt)
+  }
   
   g = ggplot(pitches, aes(x=x0,y=z0)) +
     geom_point(alpha = .5, aes(color = pitch)) +
     fgt + coord_cartesian(xlim=c(-4,4),ylim=c(0,7.5)) +
     scale_color_manual(values=c(fg_green, fg_orange, fg_blue, fg_red, "black", "yellow", "lightblue","purple"),
                        name="Pitch Type") +
-    labs(x="Horizontal Release Point", y="Vertical Release Point") +
-    ggtitle(bquote(atop(.(title), atop(.(subt)), "")))
+    labs(x="Horizontal Release Point", y="Vertical Release Point", caption = "Source: PITCHf/x. Values in feet.") +
+    plot.title
 
   fname = paste0(gsub(":","",gsub("\\.","",gsub(" ","_",gsub(", ","_",title)))),".png")
   if (save) {

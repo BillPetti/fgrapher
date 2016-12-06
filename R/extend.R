@@ -1,4 +1,4 @@
-#' Extend
+#' Extend a day or month number into a 2-character string
 #' 
 #' @param n character string?
 #' @export
