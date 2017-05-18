@@ -22,5 +22,5 @@ init_fg_db = function() {
   #umpire ids
   uids <- FGQuery('select distinct UName, UmpireId from umpires_daily_batting_full_pfx')
   assign("uids", uids, envir = .GlobalEnv)
-  cat("Successfully connected to the FanGraphs database!")
+  print("Successfully connected to the FanGraphs database!")
 }
